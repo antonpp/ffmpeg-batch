@@ -3,7 +3,6 @@ GKE standard cluster with a GPU node (nvidia-l4) with a sample ffmpeg script tha
 
 
 ```bash
-vim variables.tf # edit values for your env
 terraform init
 terraform apply
 # run the gke_cluster_kubectl_command command to configure kubectl
