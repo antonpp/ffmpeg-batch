@@ -1,5 +1,4 @@
 variable "project" {
-  default = "gke-dja-demo"
 }
 
 variable "region" {

@@ -1,0 +1,31 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: hello-nvav1
+spec:
+  template:
+    spec:
+      containers:
+      - name: ffmpeg-enc
+        image: europe-docker.pkg.dev/gke-dja-demo/ffmpeg-test/ffmpeg-container-cuda@sha256:5174881772c7df01b793eabbdc23f91eb4f2061a3886fdc22b3f9983f421e8bc
+        command: [bash]
+        args: [/scripts/nvenc_av1.sh]
+        resources:
+          limits:
+            cpu: 3750m
+            memory: 1Gi
+            ephemeral-storage: 1Gi
+            nvidia.com/gpu: 1
+          requests:
+            cpu: 1000m
+            memory: 1Gi
+            ephemeral-storage: 1Gi
+        volumeMounts:
+          - mountPath: /scripts
+            name: scripts-volume
+      restartPolicy: Never
+      volumes:
+      - name: scripts-volume
+        configMap:
+          name: ffmpeg-scripts
+  backoffLimit: 2

@@ -2,7 +2,7 @@ terraform {
   required_providers {
     google = {
       source  = "hashicorp/google"
-      version = "4.51.0"
+      version = "5.7.0"
     }
   }
 }
@@ -118,17 +118,32 @@ resource "google_container_node_pool" "gpu_pool" {
     guest_accelerator {
       type  = "nvidia-l4"
       count = 1
+      gpu_driver_installation_config {
+        gpu_driver_version = "LATEST"
+      }
+    }
+
+    image_type   = "cos_containerd"
+    disk_size_gb = "100"
+    disk_type    = "pd-balanced"
+
+    metadata = {
+      disable-legacy-endpoints = "true"
     }
 
     oauth_scopes = [
       "https://www.googleapis.com/auth/cloud-platform",
       "https://www.googleapis.com/auth/logging.write",
       "https://www.googleapis.com/auth/monitoring",
+      "https://www.googleapis.com/auth/devstorage.read_only",
+      "https://www.googleapis.com/auth/servicecontrol",
+      "https://www.googleapis.com/auth/service.management.readonly",
+      "https://www.googleapis.com/auth/trace.append" 
     ]
   }
 }
 
 output "gke_cluster_kubectl_command" {
-  value = "gcloud container clusters get-credentials ${google_container_cluster.primary.name} --region ${google_container_cluster.primary.location}"
+  value = "gcloud container clusters get-credentials ${google_container_cluster.primary.name} --region ${google_container_cluster.primary.location} --project ${var.project}"
   description = "Run this command to configure kubectl to connect to the GKE cluster"
 }
